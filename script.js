@@ -94,17 +94,17 @@ function GameController() {
     playerOne = "Player One";
     playerTwo = "Player Two";
 
-    const board = GameBoard();
+    let board = GameBoard();
 
     const players = [
         {
             name: playerOne,
-            token: 1
+            token: "x"
         },
 
         {
             name: playerTwo,
-            token: 2
+            token: "o"
         }
     ];
 
@@ -124,15 +124,15 @@ function GameController() {
         }
     }
 
-    const playRound = (row,col,token) => {
+    const playRound = (row,col) => {
         if(gameOver) {
             console.log("Game is over! Start a new game.");
             return;
         }
 
-        console.log(`${getActivePlayer().name} is making a move at (${row}, ${col}...`)
+        console.log(`${getActivePlayer().name} is making a move at (${row}, ${col})...`)
 
-        if (!board.placeToken(row,col,token)){
+        if (!board.placeToken(row,col,getActivePlayer().token)){
             console.log("Invalid move! Try again.");
             return;
         }
@@ -150,16 +150,23 @@ function GameController() {
 
     printNewRound();
 
-    return{playRound, getActivePlayer};
+    const newGame = () => {
+        gameOver = false; 
+        activePlayer = players[0];
+        board = GameBoard();
+        console.log("New game has been started, play rounds to begin!")
+    }
+
+    return{playRound, getActivePlayer, newGame};
 
 }
 
 const game = GameController();
 
-game.playRound(0, 0, "x"); // Player One
-game.playRound(0, 1, "x"); // Player Two
-game.playRound(1, 1, "x"); // Player One
-game.playRound(0, 2, "x"); // Player Two
-game.playRound(2, 2, "x"); // Player One wins
+game.playRound(0, 0); // Player One
+game.playRound(0, 1); // Player Two
+game.playRound(1, 1); // Player One
+game.playRound(0, 2); // Player Two
+game.playRound(2, 2); // Player One wins
 
 ///////////////////////////////////////////////////////
