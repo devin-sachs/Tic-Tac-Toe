@@ -74,7 +74,7 @@ function GameBoard() {
                     // console.log(`Board (${row},${col}) ${board[row][col].getValue()}`)
                     gridFilled.push(true)
                 } else {
-                    gridFilled.push(false);
+                    gridFilled.push(false); 
                 }
             }
         }
@@ -115,6 +115,8 @@ function GameController() {
     playerTwo = "Player Two";
 
     let board = GameBoard();
+
+    const getBoard = () => board;
 
     const players = [
         {
@@ -185,17 +187,17 @@ function GameController() {
         console.log("New game has been started, play rounds to begin!")
     }
 
-    return{playRound, getActivePlayer, newGame};
+    return{playRound, getActivePlayer, newGame, getBoard};
 
 }
 
 const game = GameController();
 
-game.playRound(0, 0); // Player One
-game.playRound(0, 1); // Player Two
-game.playRound(1, 1); // Player One
-game.playRound(0, 2); // Player Two
-game.playRound(2, 2); // Player One wins
+// game.playRound(0, 0); // Player One
+// game.playRound(0, 1); // Player Two
+// game.playRound(1, 1); // Player One
+// game.playRound(0, 2); // Player Two
+// game.playRound(2, 2); // Player One wins
 
 ///////////////////////////////////////////////////////
 
@@ -231,3 +233,57 @@ game.playRound(2, 2); // Player One wins
 
 // game.playRound(2, 1); // Player Two 
 // game.playRound(2, 2); // Player One x
+
+
+function renderGame(game) {
+
+    const gameBoardContainer = document.querySelector(".gameboard-container");
+
+    if(!gameBoardContainer){
+        console.error("Gameboard container is not found!");
+        return;
+    }
+
+    const drawBoard = () => {
+
+        //this clears the gameboard so future updates are kept 
+        gameBoardContainer.textContent = "";
+
+
+        let board = game.getBoard().getBoard();
+
+        for (let row = 0; row < board.length; row++){
+            for(let col = 0; col < board[row].length; col++) {
+                let playerSquare = document.createElement("div");
+                playerSquare.classList.add("player-square");
+                playerSquare.dataset.row = row;
+                playerSquare.dataset.col = col;
+
+                const cellValue = board[row][col].getValue();
+                playerSquare.textContent = cellValue !== 0 ? cellValue : " ";
+                // playerSquare.textContent = " ";
+                // playerSquare.textContent = cellValue;
+
+                playerSquare.addEventListener("click", () => handleCellClick(row,col));
+
+                gameBoardContainer.appendChild(playerSquare)
+            }
+        }
+
+        const handleCellClick = (row,col) => {
+            game.playRound(row,col);
+            drawBoard();
+
+            const winner = game.getBoard().checkWinner();
+            const tie = game.getBoard().checkTie();
+        }
+    }
+
+    return {drawBoard}
+
+}
+
+// Ensure `game` is properly initialized before calling this
+const render = renderGame(game);
+render.drawBoard();
+
