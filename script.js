@@ -66,13 +66,33 @@ function GameBoard() {
         return null;
     }
 
+    const checkTie = () => {
+        let gridFilled = [];
+        for(let row = 0; row < gridSize; row++){
+            for(let col = 0; col < gridSize; col++){
+                if(board[row][col].getValue() != 0) {
+                    // console.log(`Board (${row},${col}) ${board[row][col].getValue()}`)
+                    gridFilled.push(true)
+                } else {
+                    gridFilled.push(false);
+                }
+            }
+        }
+
+        if(gridFilled.every(Boolean)) {
+            return true;
+        }
+
+        return null;
+    }
+
     
     const printBoard = () => {
         const boardWithCellValues = board.map((row) => row.map((cell) => cell.getValue()));
         console.log(boardWithCellValues);
     };
 
-    return {getBoard, placeToken, checkWinner, printBoard}
+    return {getBoard, placeToken, checkWinner, printBoard, checkTie}
 }
 
 function Cell() {
@@ -137,9 +157,17 @@ function GameController() {
             return;
         }
         const  winner = board.checkWinner();
+        const tie = board.checkTie();
         if(winner) {
             board.printBoard();
             console.log(`Game Over! ${winner === 1 ? players[0].name : players[1].name} wins!`)
+            gameOver = true;
+            return;
+        }
+
+        if(tie) {
+            board.printBoard()
+            console.log(`Game Over! Its a tie!!`)
             gameOver = true;
             return;
         }
@@ -170,3 +198,36 @@ game.playRound(0, 2); // Player Two
 game.playRound(2, 2); // Player One wins
 
 ///////////////////////////////////////////////////////
+
+//new game Tie testing - need to add check if tie 
+
+// game.newGame();
+
+// game.playRound(0, 2); // Player One x
+// game.playRound(0, 1); // Player Two
+// game.playRound(1, 0); // Player One x
+// game.playRound(0, 0); // Player Two 
+
+// game.playRound(2, 1); // Player One x
+// game.playRound(2, 0); // Player Two 
+// game.playRound(2, 2); // Player One x
+
+// game.playRound(1, 2); // Player Two 
+// game.playRound(1, 1); // Player One x
+
+//alternative tie mode 
+
+
+// game.newGame();
+
+// game.playRound(0, 1); // Player One x
+// game.playRound(0, 0); // Player Two
+// game.playRound(0, 2); // Player One x
+// game.playRound(1, 1); // Player Two 
+
+// game.playRound(1, 0); // Player One x
+// game.playRound(1, 2); // Player Two 
+// game.playRound(2, 0); // Player One x
+
+// game.playRound(2, 1); // Player Two 
+// game.playRound(2, 2); // Player One x
