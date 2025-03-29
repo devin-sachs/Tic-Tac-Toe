@@ -8,8 +8,27 @@
 </head>
 <body>
     <div class="header"> Tic Tac Toe! </div>
-    <div class="gameboard-container"> 
+    <form> 
+        <div class="players">
+            <div class="playerOne"> 
+                <label for="PlayerOneName"> Player One ("x") Name:</label>
+                <input type="text" id="PlayerOneName"> 
+            </div>
 
+            <div class="playerTwo">
+                <label for="PlayerTwoName"> Player Two ("o") Name:</label>
+                <input type="text" id="PlayerTwoName">
+            </div>
+
+        </div>
+            <button class="playRound" value="default" > Play Round </button>
+    </form>
+
+
+    <div class="gameboard-container"> 
+    </div>
+
+    <div class="game-result-container">
     </div>
     
 </body>

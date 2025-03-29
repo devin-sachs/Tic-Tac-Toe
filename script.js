@@ -57,7 +57,7 @@ function GameBoard() {
             if(
                 board[0][2].getValue() !== 0 &&
                 board[0][2].getValue() === board[1][1].getValue() &&
-                board[1][1].getValue() === board[2][1].getValue
+                board[1][1].getValue() === board[2][2].getValue
             ) {
                 return board[0][2].getValue()
             }
@@ -110,9 +110,8 @@ function Cell() {
     };
 }
 
-function GameController() {
-    playerOne = "Player One";
-    playerTwo = "Player Two";
+
+function GameController(playerOne, playerTwo) {
 
     let board = GameBoard();
 
@@ -132,6 +131,8 @@ function GameController() {
 
     let activePlayer = players[0];
     let gameOver = false;
+    let winnerMessage = null;
+    let tieMessage = null; 
 
     const switchPlayerTurn = () => {
         activePlayer = activePlayer === players[0] ? players[1] : players[0]
@@ -142,8 +143,10 @@ function GameController() {
     const printNewRound = () => {
         board.printBoard();
         if (!gameOver) {
-            console.log(`${getActivePlayer().name}'s turn.`);
+            activePlayerName = getActivePlayer().name;
+            console.log(`${activePlayerName}'s turn.`);
         }
+        return{activePlayerName};
     }
 
     const playRound = (row,col) => {
@@ -160,22 +163,34 @@ function GameController() {
         }
         const  winner = board.checkWinner();
         const tie = board.checkTie();
+
         if(winner) {
             board.printBoard();
-            console.log(`Game Over! ${winner === 1 ? players[0].name : players[1].name} wins!`)
+
+            if(winner === "x") {
+                winnerMessage = `Game Over! ${players[0].name} wins!`;
+            } else {
+                winnerMessage = `Game Over! ${players[1].name} wins!`;
+            }
+
+            console.log(winnerMessage);
             gameOver = true;
             return;
         }
+        
 
         if(tie) {
-            board.printBoard()
-            console.log(`Game Over! Its a tie!!`)
+            board.printBoard()  
+            tieMessage = "Game Over! Its a tie!!"
+            console.log(tieMessage)
             gameOver = true;
             return;
         }
 
         switchPlayerTurn();
         printNewRound();
+
+        return {winnerMessage, tieMessage};
     };
 
     printNewRound();
@@ -187,11 +202,17 @@ function GameController() {
         console.log("New game has been started, play rounds to begin!")
     }
 
-    return{playRound, getActivePlayer, newGame, getBoard};
+    const getGameStatus = () => ({
+        gameOver, 
+        winnerMessage, 
+        tieMessage
+    });
+
+    return{playRound, getActivePlayer, newGame, getBoard, getGameStatus, activePlayerName};
 
 }
 
-const game = GameController();
+
 
 // game.playRound(0, 0); // Player One
 // game.playRound(0, 1); // Player Two
@@ -238,6 +259,7 @@ const game = GameController();
 function renderGame(game) {
 
     const gameBoardContainer = document.querySelector(".gameboard-container");
+    const gameResultsContainer = document.querySelector(".game-result-container");
 
     if(!gameBoardContainer){
         console.error("Gameboard container is not found!");
@@ -248,7 +270,6 @@ function renderGame(game) {
 
         //this clears the gameboard so future updates are kept 
         gameBoardContainer.textContent = "";
-
 
         let board = game.getBoard().getBoard();
 
@@ -261,29 +282,80 @@ function renderGame(game) {
 
                 const cellValue = board[row][col].getValue();
                 playerSquare.textContent = cellValue !== 0 ? cellValue : " ";
-                // playerSquare.textContent = " ";
-                // playerSquare.textContent = cellValue;
 
                 playerSquare.addEventListener("click", () => handleCellClick(row,col));
 
-                gameBoardContainer.appendChild(playerSquare)
+                gameBoardContainer.appendChild(playerSquare);
             }
-        }
-
-        const handleCellClick = (row,col) => {
-            game.playRound(row,col);
-            drawBoard();
-
-            const winner = game.getBoard().checkWinner();
-            const tie = game.getBoard().checkTie();
         }
     }
 
-    return {drawBoard}
+    const displayResult = () => {
+
+        const gameStatus = game.getGameStatus();
+
+        if (gameStatus.gameOver) {
+
+            let gameResult = gameStatus.tieMessage || gameStatus.winnerMessage;
+            console.log("display results", gameResult);
+
+            let gameResultDiv = document.createElement("div");
+            gameResultDiv.textContent = "";
+            gameResultDiv.classList.add("results");
+            gameResultDiv.textContent = gameResult;
+    
+            gameResultsContainer.appendChild(gameResultDiv);
+        }
+
+
+    }
+
+    const handleCellClick = (row,col) => {
+        game.playRound(row,col);
+        drawBoard();
+
+        const winner = game.getBoard().checkWinner();
+        const tie = game.getBoard().checkTie();
+
+        const gameStatus = game.getGameStatus();
+        if (gameStatus.gameOver) {
+            displayResult();  // Display the winner or tie result
+        }
+    }
+
+    // displayResult();
+
+    return {drawBoard,displayResult}
 
 }
 
-// Ensure `game` is properly initialized before calling this
-const render = renderGame(game);
-render.drawBoard();
+function playGame() {
+            
+    const playButton = document.querySelector(".playRound");
 
+    if (!playButton){
+        console.error("play button not found");
+        return;
+    }
+
+    playButton.addEventListener("click", (event) => {
+
+        event.preventDefault();
+
+        const playerOne = document.querySelector("#PlayerOneName").value || "Player 1";
+        const playerTwo = document.querySelector("#PlayerTwoName").value || "Player 2";
+
+        console.log(`Game started: ${playerOne} vs ${playerTwo}`);
+
+        console.log("Player One:", playerOne);
+        console.log("Player Two:", playerTwo);
+
+        const game = GameController(playerOne,playerTwo);
+        const render = renderGame(game);
+        render.drawBoard();
+        render.displayResult();
+    })
+
+}
+
+playGame();
