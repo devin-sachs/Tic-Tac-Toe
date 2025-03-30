@@ -61,7 +61,7 @@ function GameBoard() {
             ) {
                 return board[0][2].getValue();
             }
-              
+
         return null;
     }
 
@@ -298,8 +298,11 @@ function renderGame(game) {
             let gameResult = gameStatus.tieMessage || gameStatus.winnerMessage;
             console.log("display results", gameResult);
 
-            let gameResultDiv = document.createElement("div");
-            gameResultDiv.textContent = "";
+            //clear previous game messages
+            gameResultsContainer.textContent = "";
+
+            const gameResultDiv = document.createElement("div");
+
             gameResultDiv.classList.add("results");
             gameResultDiv.textContent = gameResult;
     
@@ -322,9 +325,11 @@ function renderGame(game) {
         }
     }
 
-    // displayResult();
+    const clearResult = () => {
+        gameResultsContainer.textContent = ""
+    }
 
-    return {drawBoard,displayResult}
+    return {drawBoard,displayResult, clearResult}
 
 }
 
@@ -351,6 +356,7 @@ function playGame() {
 
         const game = GameController(playerOne,playerTwo);
         const render = renderGame(game);
+        render.clearResult();
         render.drawBoard();
         render.displayResult();
     })
