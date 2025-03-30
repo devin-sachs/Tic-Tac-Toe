@@ -55,14 +55,13 @@ function GameBoard() {
             }
 
             if(
-                board[0][2].getValue() !== 0 &&
-                board[0][2].getValue() === board[1][1].getValue() &&
-                board[1][1].getValue() === board[2][2].getValue
+                board[0][2].getValue() !== 0 && 
+                board[0][2].getValue() === board[1][1].getValue() && 
+                board[1][1].getValue() === board[2][0].getValue()
             ) {
-                return board[0][2].getValue()
+                return board[0][2].getValue();
             }
-
-        
+              
         return null;
     }
 
