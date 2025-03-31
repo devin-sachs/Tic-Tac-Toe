@@ -50,3 +50,10 @@ form{
     align-items: center;
 
 }
+
+.results{
+    display: flex;
+    justify-content: center;
+    padding-top: 1em;
+    font-size:xx-large
+}
